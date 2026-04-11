@@ -2,6 +2,7 @@ package com.scarlxrd.identity_service.dto;
 
 import com.scarlxrd.identity_service.entity.Role;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 
 import java.util.Set;
 
@@ -11,7 +12,6 @@ public record RegisterDTO(
         String email,
         @NotBlank
         String password,
-        @NotBlank
         Set<Role> roles
 ) {
 }
