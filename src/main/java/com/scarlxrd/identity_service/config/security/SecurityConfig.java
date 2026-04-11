@@ -33,17 +33,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                .securityMatcher("/**")
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors->{})
+                .cors(withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize ->authorize
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/logout").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/auth/refresh").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/refresh").authenticated()
                         .anyRequest().authenticated())
-                .httpBasic(withDefaults())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
