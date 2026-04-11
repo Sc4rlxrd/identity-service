@@ -1,9 +1,11 @@
+server:
+  port: 8084
 spring:
   application:
     name: identity-service
   datasource:
     platform: postgres
-    url: jdbc:postgresql://localhost:5436/authdb
+    url: jdbc:postgresql://localhost:5436/auth_db
     username: postgres
     password: root
     driver-class-name: org.postgresql.Driver
@@ -31,3 +33,8 @@ api:
     rate-limit:
       login-attempts: 5
       login-timeout-seconds: 60
+
+app:
+  admin:
+    email: ${ADMIN_EMAIL:SCARLXRD@teste.com}
+    password: ${ADMIN_PASSWORD:1234569999}
