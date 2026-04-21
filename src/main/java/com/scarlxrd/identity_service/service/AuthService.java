@@ -7,6 +7,8 @@ import com.scarlxrd.identity_service.dto.RegisterDTO;
 import com.scarlxrd.identity_service.dto.TokenResponseDTO;
 import com.scarlxrd.identity_service.entity.Role;
 import com.scarlxrd.identity_service.entity.User;
+import com.scarlxrd.identity_service.exception.InvalidTokenException;
+import com.scarlxrd.identity_service.exception.UserAlreadyExistsException;
 import com.scarlxrd.identity_service.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -38,7 +40,7 @@ public class AuthService {
 
     public void register(RegisterDTO data) {
         if (repository.findByEmail(data.email()) != null) {
-            throw new RuntimeException("User already exists");
+            throw new UserAlreadyExistsException("User already exists");
         }
 
         String encryptedPassword = passwordEncoder.encode(data.password());
@@ -51,7 +53,7 @@ public class AuthService {
         String refreshJti = decoded.getId();
 
         if (!redisService.isRefreshTokenValid(refreshJti)) {
-            throw new RuntimeException("Invalid Refresh Token");
+            throw new InvalidTokenException("Invalid Refresh Token");
         }
 
         User user = (User) repository.findByEmail(decoded.getSubject());
