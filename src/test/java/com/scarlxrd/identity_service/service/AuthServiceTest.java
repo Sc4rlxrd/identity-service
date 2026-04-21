@@ -9,6 +9,7 @@ import com.scarlxrd.identity_service.dto.TokenResponseDTO;
 import com.scarlxrd.identity_service.entity.Role;
 import com.scarlxrd.identity_service.entity.User;
 import com.scarlxrd.identity_service.repository.UserRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -61,6 +62,7 @@ class AuthServiceTest {
     }
 
     @Test
+    @DisplayName("Deve autenticar usuário e retornar tokens válidos quando credenciais corretas")
     void shouldLoginSuccessfully() {
         Authentication auth = mock(Authentication.class);
 
@@ -82,6 +84,7 @@ class AuthServiceTest {
 
 
     @Test
+    @DisplayName("Deve registrar novo usuário quando email não existir")
     void shouldRegisterUserSuccessfully() {
         when(repository.findByEmail("test@email.com")).thenReturn(null);
         when(passwordEncoder.encode("123")).thenReturn("encoded");
@@ -92,6 +95,7 @@ class AuthServiceTest {
     }
 
     @Test
+    @DisplayName("Deve lançar exceção ao tentar registrar usuário com email já existente")
     void shouldThrowWhenUserAlreadyExists() {
         when(repository.findByEmail("test@email.com")).thenReturn(user);
 
@@ -102,6 +106,7 @@ class AuthServiceTest {
     }
 
     @Test
+    @DisplayName("Deve gerar novos tokens quando refresh token for válido")
     void shouldRefreshTokenSuccessfully() {
         DecodedJWT decoded = mock(DecodedJWT.class);
 
@@ -126,6 +131,7 @@ class AuthServiceTest {
     }
 
     @Test
+    @DisplayName("Deve lançar exceção quando refresh token estiver inválido ou expirado")
     void shouldFailWhenRefreshTokenInvalid() {
         DecodedJWT decoded = mock(DecodedJWT.class);
 
@@ -140,6 +146,7 @@ class AuthServiceTest {
 
 
     @Test
+    @DisplayName("Deve adicionar token na blacklist ao realizar logout")
     void shouldLogoutSuccessfully() {
         String token = "Bearer abc";
 
