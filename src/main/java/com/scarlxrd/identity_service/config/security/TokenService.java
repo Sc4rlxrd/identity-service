@@ -5,11 +5,13 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.scarlxrd.identity_service.entity.User;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -28,9 +30,14 @@ public class TokenService {
     }
 
     public String generateAccessToken(User user) {
+
+        List<String> roles = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+
         return JWT.create()
                 .withIssuer("book-commerce")
                 .withSubject(user.getEmail())
+                .withClaim("roles", roles)
+                .withClaim("userId", user.getId().toString())
                 .withExpiresAt(LocalDateTime.now().plusHours(accessExpirationHours).toInstant(ZoneOffset.of("-03:00")))
                 .withJWTId(UUID.randomUUID().toString())
                 .sign(getAlgorithm());
@@ -40,6 +47,7 @@ public class TokenService {
         return JWT.create()
                 .withIssuer("book-commerce")
                 .withSubject(user.getEmail())
+                .withClaim("userId", user.getId().toString())
                 .withExpiresAt(LocalDateTime.now().plusDays(refreshExpirationDays).toInstant(ZoneOffset.of("-03:00")))
                 .withJWTId(UUID.randomUUID().toString())
                 .sign(getAlgorithm());
