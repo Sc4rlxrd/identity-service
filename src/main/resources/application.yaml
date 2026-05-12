@@ -55,3 +55,8 @@ management:
 tracing:
   sampling:
     probability: 1.0
+
+monitoring:
+  prometheus:
+    username: ${PROMETHEUS_USERNAME:prometheus}
+    password: ${PROMETHEUS_PASSWORD:prometheus}
