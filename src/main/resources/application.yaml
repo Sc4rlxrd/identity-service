@@ -66,11 +66,11 @@ monitoring:
     password: ${PROMETHEUS_PASSWORD:prometheus}
 
 
-logging:
-  level:
-    org.springframework.web: DEBUG
-    org.springframework.security: DEBUG
-    org.springdoc: DEBUG
+#logging:
+#  level:
+#    org.springframework.web: DEBUG
+#    org.springframework.security: DEBUG
+#    org.springdoc: DEBUG
 
 springdoc:
   api-docs:
