@@ -56,7 +56,22 @@ tracing:
   sampling:
     probability: 1.0
 
+zipkin:
+  tracing:
+    endpoint: "http://localhost:9411/api/v2/spans"
+
 monitoring:
   prometheus:
     username: ${PROMETHEUS_USERNAME:prometheus}
     password: ${PROMETHEUS_PASSWORD:prometheus}
+
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.springdoc: DEBUG
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
