@@ -51,26 +51,21 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
-
-tracing:
-  sampling:
-    probability: 1.0
-
-zipkin:
   tracing:
-    endpoint: "http://localhost:9411/api/v2/spans"
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: "http://localhost:9411/api/v2/spans"
+
+logging:
+  pattern:
+    correlation: "[traceId=%X{traceId:-} spanId=%X{spanId:-} orderId=%X{orderId:-}] "
 
 monitoring:
   prometheus:
     username: ${PROMETHEUS_USERNAME:prometheus}
     password: ${PROMETHEUS_PASSWORD:prometheus}
-
-
-#logging:
-#  level:
-#    org.springframework.web: DEBUG
-#    org.springframework.security: DEBUG
-#    org.springdoc: DEBUG
 
 springdoc:
   api-docs:
