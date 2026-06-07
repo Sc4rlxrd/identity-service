@@ -1,5 +1,6 @@
 package com.scarlxrd.identity_service.service;
 
+import com.scarlxrd.identity_service.config.metrics.IdentityMetrics;
 import com.scarlxrd.identity_service.config.redis.RedisService;
 import com.scarlxrd.identity_service.config.security.TokenService;
 import com.scarlxrd.identity_service.dto.AuthenticationDTO;
@@ -28,6 +29,7 @@ public class AuthService {
     private final TokenService tokenService;
     private final RedisService redisService;
     private final PasswordEncoder passwordEncoder;
+    private final IdentityMetrics identityMetrics;
 
     public TokenResponseDTO login(AuthenticationDTO data) {
         var auth = authenticationManager.authenticate(
@@ -35,17 +37,20 @@ public class AuthService {
         );
 
         User user = (User) auth.getPrincipal();
+        identityMetrics.loginSuccess();
         return generateAndStoreTokens(user);
     }
 
     public void register(RegisterDTO data) {
         if (repository.findByEmail(data.email()) != null) {
+            identityMetrics.registerFailed("user_already_exists");
             throw new UserAlreadyExistsException("User already exists");
         }
 
         String encryptedPassword = passwordEncoder.encode(data.password());
         User newUser = new User(data.email(), encryptedPassword, Set.of(Role.USER));
         repository.save(newUser);
+        identityMetrics.registerSuccess();
     }
 
     public TokenResponseDTO refreshToken(String refreshToken) {
@@ -53,6 +58,7 @@ public class AuthService {
         String refreshJti = decoded.getId();
 
         if (!redisService.isRefreshTokenValid(refreshJti)) {
+            identityMetrics.refreshTokenFailed("invalid_refresh_token");
             throw new InvalidTokenException("Invalid Refresh Token");
         }
 
@@ -61,7 +67,7 @@ public class AuthService {
 
         redisService.deleteRefreshToken(refreshJti);
 
-
+        identityMetrics.refreshTokenSuccess();
         return generateAndStoreTokens(user);
     }
 
@@ -77,7 +83,10 @@ public class AuthService {
 
     private TokenResponseDTO generateAndStoreTokens(User user) {
         String accessToken = tokenService.generateAccessToken(user);
+        identityMetrics.tokenGenerated("access");
+
         String refreshToken = tokenService.generateRefreshToken(user);
+        identityMetrics.tokenGenerated("refresh");
 
         var jti = tokenService.getJti(refreshToken);
         long ttl = tokenService.getExpiration(refreshToken).getEpochSecond() - Instant.now().getEpochSecond();
