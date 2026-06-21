@@ -1,72 +1,58 @@
 server:
   port: 8084
+
 spring:
   application:
     name: identity-service
-  datasource:
-    platform: postgres
-    url: jdbc:postgresql://localhost:5436/auth_db
-    username: postgres
-    password: root
-    driver-class-name: org.postgresql.Driver
+
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
   threads:
     virtual:
       enabled: true
 
-  redis:
-    host: localhost
-    port: 6379
-flyway:
-  enabled: true
-  locations: classpath:db/migration
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
 
-jpa:
-  hibernate:
-    ddl-auto: validate
-    deferred-datasource-initialization: true
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
 api:
   security:
     token:
-      secret: ${JWT_SECRET:dd2e2add61a0cce0eb2bfb9c2d812515}
       access-expiration-hours: 1
       refresh-expiration-days: 7
+
     rate-limit:
       login-attempts: 5
       login-timeout-seconds: 60
-
-app:
-  admin:
-    email: ${ADMIN_EMAIL:SCARLXRD@teste.com}
-    password: ${ADMIN_PASSWORD:1234569999}
-
 
 management:
   endpoints:
     web:
       exposure:
         include: health, info, prometheus, metrics
+
   endpoint:
     health:
       show-details: always
+
   metrics:
     tags:
       application: ${spring.application.name}
+
   tracing:
     sampling:
       probability: 1.0
-  zipkin:
-    tracing:
-      endpoint: "http://localhost:9411/api/v2/spans"
 
 logging:
   pattern:
     correlation: "[traceId=%X{traceId:-} spanId=%X{spanId:-} orderId=%X{orderId:-}] "
 
-monitoring:
-  prometheus:
-    username: ${PROMETHEUS_USERNAME:prometheus}
-    password: ${PROMETHEUS_PASSWORD:prometheus}
-
 springdoc:
   api-docs:
     path: /v3/api-docs
+
