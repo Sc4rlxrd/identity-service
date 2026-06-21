@@ -1,6 +1,7 @@
 package com.scarlxrd.identity_service.service;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.scarlxrd.identity_service.config.metrics.IdentityMetrics;
 import com.scarlxrd.identity_service.config.redis.RedisService;
 import com.scarlxrd.identity_service.config.security.TokenService;
 import com.scarlxrd.identity_service.dto.AuthenticationDTO;
@@ -50,6 +51,9 @@ class AuthServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private  IdentityMetrics identityMetrics;
 
     @InjectMocks
     private AuthService authService;
